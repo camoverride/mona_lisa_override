@@ -83,6 +83,6 @@ if __name__ == "__main__":
                                target_image=cv2.imread("test_images/mona_lisa.jpg"))
 
     # Show the image
-    # cv2.imshow("Mona Lisa Override", swapped_image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow("Mona Lisa Override", swapped_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

@@ -12,6 +12,6 @@
 -  `python swap.py`
 
 
-## TODO
+## Benchmark
 
-- benchmark on Raspberry Pi 4
+- 20 secs to reach `print("Identifying faces")`, 20 secs more to finish -- not bad!
