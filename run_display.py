@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-
 from contextlib import contextmanager
 import cv2
 import insightface
@@ -62,7 +61,6 @@ def swap_faces(source_image, target_image):
         The image with the swapped face.
     """
     # Identify Faces
-    print("Identifying faces")
     source_faces = app.get(source_image)
     target_faces = app.get(target_image)
 
@@ -70,21 +68,16 @@ def swap_faces(source_image, target_image):
     source_face = source_faces[0]
     target_face = target_faces[0]
 
-    print("Swapping faces")
+    # Swap faces
     swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)
 
     return swapped_face
 
 
-
 if __name__ == "__main__":
-    # Initialize face analysis model
-    app = FaceAnalysis(name="buffalo_l")
-    app.prepare(ctx_id=0, det_size=(640, 640))
-
-    # Load and display the initial image
+    # Load and display the initial background image
     background_image = cv2.imread("test_images/mona_lisa.jpg")
-    cv2.imshow("Mona Lisa Override", background_image)
+    cv2.imshow("Display Image", background_image)
 
     # Initialize the webcam
     cap = cv2.VideoCapture(0)
@@ -93,6 +86,10 @@ if __name__ == "__main__":
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
+
+    # Timer to track last detected face
+    last_face_time = time.time()
+    display_face = False
 
     while True:
         # Capture frame from webcam
@@ -107,12 +104,20 @@ if __name__ == "__main__":
         
         # If a face is detected, process the image
         if faces:
-            # Perform some operation to create a new image
-            new_image = swap_faces(source_image=frame,
-                                   target_image=background_image)
+            # Perform the face swap
+            new_image = swap_faces(source_image=frame, target_image=background_image)
 
-            # Replace the displayed image with the new image
+            # Display the new image
             cv2.imshow("Display Image", new_image)
+
+            # Update the last face detection time
+            last_face_time = time.time()
+            display_face = True
+        else:
+            # If no face is detected for 10 seconds, switch back to background
+            if display_face and (time.time() - last_face_time > 10):
+                cv2.imshow("Display Image", background_image)
+                display_face = False
 
         # Check for key presses
         if cv2.waitKey(1) & 0xFF == ord('q'):
