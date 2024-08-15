@@ -2,7 +2,7 @@
 
 ## Setup
 
-- `python -m venv .venv`
+- `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 
