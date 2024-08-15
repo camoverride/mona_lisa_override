@@ -100,6 +100,7 @@ if __name__ == "__main__":
         
         # If a face is detected, process the image
         if faces:
+            print("face detected!")
             # Perform the face swap
             new_image = swap_faces(source_image=frame, target_image=background_image)
 
