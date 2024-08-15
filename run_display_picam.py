@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     # Initialize the picamera
     picam2 = Picamera2()
-    # picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",
+    picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
                                                                 # "size": (WIDTH, HEIGHT)}))
     picam2.start()
 
@@ -120,5 +120,4 @@ if __name__ == "__main__":
             break
 
     # Release the camera and close windows
-    cap.release()
     cv2.destroyAllWindows()
