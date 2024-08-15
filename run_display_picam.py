@@ -79,8 +79,8 @@ if __name__ == "__main__":
 
     # Initialize the picamera
     picam2 = Picamera2()
-    picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",
-                                                                "size": (WIDTH, HEIGHT)}))
+    # picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",
+                                                                # "size": (WIDTH, HEIGHT)}))
     picam2.start()
 
     # Load and display the initial background image
