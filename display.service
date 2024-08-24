@@ -1,0 +1,15 @@
+[Unit]
+Description=display mona lisa
+After=default.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/pi/mona_lisa_override
+ExecStart=/home/pi/mona_lisa_override/.venv/bin/python /home/pi/mona_lisa_override/run_display_picam.py
+StandardOutput=journal
+StandardError=journal
+Environment="PATH=/home/pi/mona_lisa_override/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+[Install]
+WantedBy=default.target
