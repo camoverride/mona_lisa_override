@@ -14,7 +14,7 @@
 
 ## Benchmark
 
-- 20 secs to reach `print("Identifying faces")`, 20 secs more to finish -- not bad!
+- 20 
 
 
 ## TODO

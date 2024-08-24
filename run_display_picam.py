@@ -76,6 +76,12 @@ def swap_faces(source_image, target_image):
 
 
 if __name__ == "__main__":
+    # Rotate screen
+    os.environ["DISPLAY"] = ':0'
+    os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
+
+    # Hide the mouse
+    os.system("unclutter -idle 0 &")
 
     # Initialize the picamera
     picam2 = Picamera2()
