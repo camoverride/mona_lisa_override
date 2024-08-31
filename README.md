@@ -39,5 +39,10 @@ Get the logs: `journalctl --user -u display.service`
 
 ## TODO
 
-- change dimensions of mona lisa to match monitor
-- speed up!
+- [ ] Make frame
+- [ ] Change dimensions of mona lisa to match monitor
+- [ ] speed up!
+    - Model quantization
+    - Intel's Movidius Neural Compute Stick 2 (or equivalent)
+    - Reduce Input Size
+    - Efficient Preprocessing

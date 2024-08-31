@@ -9,6 +9,7 @@ import onnxruntime as ort
 from picamera2 import Picamera2
 
 
+
 # Set logging level to error to suppress warnings
 ort.set_default_logger_severity(3)
 import warnings
@@ -78,7 +79,7 @@ def swap_faces(source_image, target_image):
 if __name__ == "__main__":
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
-    os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
+    os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 270")
 
     # Hide the mouse
     os.system("unclutter -idle 0 &")
