@@ -91,7 +91,7 @@ if __name__ == "__main__":
     picam2.start()
 
     # Load and display the initial background image
-    background_image = cv2.imread("test_images/mona_lisa.jpg")
+    background_image = cv2.imread("test_images/mona_lisa_1080_1920.png")
     cv2.imshow("Display Image", background_image)
 
     # Timer to track last detected face
