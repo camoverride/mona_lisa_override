@@ -91,7 +91,7 @@ if __name__ == "__main__":
     picam2.start()
 
     # Load and display the initial background image
-    background_image = cv2.imread("test_images/mona_lisa_1080_1920.jpg")
+    background_image = cv2.imread("test_images/pearl_earring_1920_1200.png")
     cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
