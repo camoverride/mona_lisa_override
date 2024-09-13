@@ -1,5 +1,6 @@
 # Mona Lisa Override
 
+
 ## Setup
 
 - `git clone git@github.com:camoverride/mona_lisa_override.git`
@@ -7,6 +8,12 @@
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
+
+If using the arducam:
+
+- `sudo apt update`
+- `sudo apt install libcamera-apps`
+- `libcamera-still -o test_image.jpg`
 
 
 ## Test
