@@ -79,7 +79,7 @@ def swap_faces(source_image, target_image):
 if __name__ == "__main__":
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
-    os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 270")
+    os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
 
     # Hide the mouse
     os.system("unclutter -idle 0 &")
@@ -87,7 +87,6 @@ if __name__ == "__main__":
     # Initialize the picamera
     picam2 = Picamera2()
     picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
-                                                                # "size": (WIDTH, HEIGHT)}))
     picam2.start()
 
     # Load and display the initial background image

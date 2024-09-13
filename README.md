@@ -2,7 +2,8 @@
 
 ## Setup
 
-- `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
+- `git clone git@github.com:camoverride/mona_lisa_override.git`
+- `python -m venv --system-site-packages .venv`
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
@@ -18,8 +19,7 @@
 Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies:
 
 - `mkdir -p ~/.config/systemd/user`
-
-- Paste the contents of `display.service` into `~/.config/systemd/user/display.service`
+- `cat display.service > ~/.config/systemd/user/display.service`
 
 Start the service using the commands below:
 
