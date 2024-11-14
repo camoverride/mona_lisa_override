@@ -2,6 +2,7 @@
 
 ## Setup
 
+- `git checkout mona_list_chicago`
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
@@ -18,8 +19,7 @@
 Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies:
 
 - `mkdir -p ~/.config/systemd/user`
-
-- Paste the contents of `display.service` into `~/.config/systemd/user/display.service`
+- `cat display.service > ~/.config/systemd/user/display.service`
 
 Start the service using the commands below:
 
@@ -39,10 +39,9 @@ Get the logs: `journalctl --user -u display.service`
 
 ## TODO
 
-- [ ] Make frame
-- [ ] Change dimensions of mona lisa to match monitor
-- [ ] speed up!
-    - Model quantization
-    - Intel's Movidius Neural Compute Stick 2 (or equivalent)
-    - Reduce Input Size
-    - Efficient Preprocessing
+- [ ] Configure a Read-Only Overlay Filesystem
+- [ ] Remove print statements
+- [ ] Store Logs in RAM (Optional): For system logs or any logs your code might generate, consider redirecting /var/log
+- [ ] Periodic Reboots (cron job)
+- [ ] Limit Background Services and Packages: Install only the essential software needed for your project, and disable unnecessary background services to reduce resource use and potential points of failure.
+- [ ] Minimize OS-Level Writes: Reduce logging and disable unnecessary services that may write to the SD card, or set up /tmp and other temporary directories to store data in RAM instead of on the SD card.
