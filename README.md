@@ -7,7 +7,7 @@
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
-
+- copy `inswapper_128.onnx` to the base directory of the repo.
 
 ## Test
 
@@ -32,16 +32,15 @@ Start it on boot: `sudo loginctl enable-linger pi`
 Get the logs: `journalctl --user -u display.service`
 
 
+## Increase Longevity
+
+Follow these steps in order:
+- Install tailscale for remote access and debugging.
+- Configure backup wifi networks (hotspot) in wpa_supplicant.conf
+- Set up periodic reboots (cron job)
+- Configure a Read-Only Overlay Filesystem
+
+
 ## Benchmark
 
 - 20 seconds to update
-
-
-## TODO
-
-- [ ] Configure a Read-Only Overlay Filesystem
-- [ ] Remove print statements
-- [ ] Store Logs in RAM (Optional): For system logs or any logs your code might generate, consider redirecting /var/log
-- [ ] Periodic Reboots (cron job)
-- [ ] Limit Background Services and Packages: Install only the essential software needed for your project, and disable unnecessary background services to reduce resource use and potential points of failure.
-- [ ] Minimize OS-Level Writes: Reduce logging and disable unnecessary services that may write to the SD card, or set up /tmp and other temporary directories to store data in RAM instead of on the SD card.
