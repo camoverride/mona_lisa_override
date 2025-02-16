@@ -2,12 +2,12 @@
 
 ## Setup
 
-- `git checkout mona_list_chicago`
+- `git checkout mona_lisa_final`
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
-- copy `inswapper_128.onnx` to the base directory of the repo.
+- copy `inswapper_128.onnx` to the base directory of this repo.
 
 ## Test
 
@@ -16,7 +16,7 @@
 
 ## Run in Production
 
-Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies:
+Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies. This is expected to run on a Raspberry Pi 5:
 
 - `mkdir -p ~/.config/systemd/user`
 - `cat display.service > ~/.config/systemd/user/display.service`
@@ -32,15 +32,15 @@ Start it on boot: `sudo loginctl enable-linger pi`
 Get the logs: `journalctl --user -u display.service`
 
 
-## Increase Longevity
+## Increase System Longevity
 
 Follow these steps in order:
 - Install tailscale for remote access and debugging.
-- Configure backup wifi networks (hotspot) in wpa_supplicant.conf
-- Set up periodic reboots (cron job)
+- Configure backup wifi networks
 - Configure a Read-Only Overlay Filesystem
+- Set up periodic reboots (cron job)
 
 
 ## Benchmark
 
-- 20 seconds to update
+- ~20 seconds to update

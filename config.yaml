@@ -1,0 +1,11 @@
+# Name of the Wayland display. Find this with the terminal command: ``
+dispay_name: wayland-0
+
+# ID of the monitor. Find this with the terminal command: ``
+display_output: HDMI-A-1
+
+# How much to rotate the monitor
+rotation: 90
+
+# The path to the basis image. This image should be the same dimensions as the monitor.
+image_path: mona_lisa_1080_1920.jpg

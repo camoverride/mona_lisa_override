@@ -2,10 +2,12 @@ import os
 import sys
 import time
 from contextlib import contextmanager
+import yaml
 import cv2
 import insightface
 from insightface.app import FaceAnalysis
 import onnxruntime as ort
+
 
 
 # Set logging level to error to suppress warnings
@@ -75,36 +77,50 @@ def swap_faces(source_image, target_image):
 
 
 if __name__ == "__main__":
+    # Load the config file
+    with open("config.yaml", "r") as config_file:
+        config = yaml.safe_load(config_file)
+
+    # Rotate screen
+    os.environ["DISPLAY"] = ':0'
+    os.system(f"WAYLAND_DISPLAY={config_file['display_name']} wlr-randr --output {config_file['display_output']} --transform {config['rotation']}")
+
+    # Hide the mouse
+    os.system("unclutter -idle 0 &")
+
     # Load and display the initial background image
-    background_image = cv2.imread("test_images/mona_lisa.jpg")
+    background_image = cv2.imread(f"images/{config['image_path']}")
+    cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
     cv2.imshow("Display Image", background_image)
-
-    # Initialize the webcam
-    cap = cv2.VideoCapture(0)
-
-    # Check if the webcam is opened correctly
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
 
     # Timer to track last detected face
     last_face_time = time.time()
     display_face = False
 
     while True:
-        # Capture frame from webcam
-        ret, frame = cap.read()
-        
-        if not ret:
-            print("Failed to grab frame")
-            break
+        # Get an image using cv2
+        cap = cv2.VideoCapture(0)
 
+        # Check if the webcam is opened correctly
+        if not cap.isOpened():
+            print("Error: Could not open webcam.")
+            exit()
+
+        # Capture a single frame
+        ret, frame = cap.read()
+
+        # Check if the frame was captured successfully
+        if not ret:
+            print("Error: Could not capture frame.")
+            exit()
+    
         # Detect faces in the frame
         faces = app.get(frame)
         
         # If a face is detected, process the image
         if faces:
-            print("Face detected!")
             # Perform the face swap
             new_image = swap_faces(source_image=frame, target_image=background_image)
 
@@ -121,9 +137,8 @@ if __name__ == "__main__":
                 display_face = False
 
         # Check for key presses
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     # Release the camera and close windows
-    cap.release()
     cv2.destroyAllWindows()
