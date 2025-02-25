@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from contextlib import contextmanager
+
 import yaml
 import cv2
 import insightface
