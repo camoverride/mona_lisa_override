@@ -1,6 +1,6 @@
 # Name of the display server protocol.
 # Find this with the terminal command: `echo $WAYLAND_DISPLAY`
-dispay_name: wayland-0
+display_name: wayland-0
 
 # Name of the HDMI output port.
 # Find this with the terminal command: `wlr-randr` or `xrandr --query`
