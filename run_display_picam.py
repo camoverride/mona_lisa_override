@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
-    os.system(f"WAYLAND_DISPLAY={config_file['display_name']} wlr-randr --output {config_file['display_output']} --transform {config['rotation']}")
+    os.system(f"WAYLAND_DISPLAY={config['display_name']} wlr-randr --output {config['display_output']} --transform {config['rotation']}")
 
     # Hide the mouse
     os.system("unclutter -idle 0 &")
