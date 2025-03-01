@@ -11,4 +11,5 @@ rotation: 90
 
 # The path to the background image.
 # This image should be the same dimensions as the monitor.
-image_path: mona_lisa_1080_1920.jpg
+# Find this with `wlr-randr`
+image_path: mona_lisa_1200_1920.jpg
