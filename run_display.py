@@ -8,7 +8,6 @@ import cv2
 import insightface
 from insightface.app import FaceAnalysis
 import onnxruntime as ort
-from picamera2 import Picamera2
 
 
 
@@ -83,18 +82,27 @@ if __name__ == "__main__":
     with open("config.yaml", "r") as config_file:
         config = yaml.safe_load(config_file)
 
+    # Which type of camera are we using? (options: "picam", "webcam")
+    camera_type = config["camera_type"]
+
+    if camera_type == "picam":
+        from picamera2 import Picamera2
+
+        # Initialize the picamera
+        picam2 = Picamera2()
+        picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
+                                                                    # "size": (WIDTH, HEIGHT)}))
+        picam2.start()
+
+    else:
+        pass #cv2 is already loaded
+
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
     os.system(f"WAYLAND_DISPLAY={config['display_name']} wlr-randr --output {config['display_output']} --transform {config['rotation']}")
 
     # Hide the mouse
     os.system("unclutter -idle 0 &")
-
-    # Initialize the picamera
-    picam2 = Picamera2()
-    picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
-                                                                # "size": (WIDTH, HEIGHT)}))
-    picam2.start()
 
     # Load and display the initial background image
     background_image = cv2.imread(f"images/{config['image_path']}")
@@ -108,8 +116,26 @@ if __name__ == "__main__":
     display_face = False
 
     while True:
-        # Capture frame from webcam
-        frame = picam2.capture_array()
+        if camera_type == "picam":
+            # Capture frame from picam
+            frame = picam2.capture_array()
+
+        elif camera_type == "webcam":
+            # Capture the frame from the webcam
+            cap = cv2.VideoCapture(0)
+
+            # Check if the webcam is opened correctly
+            if not cap.isOpened():
+                print("Error: Could not open webcam.")
+                exit()
+
+            # Capture a single frame
+            ret, frame = cap.read()
+
+            # Check if the frame was captured successfully
+            if not ret:
+                print("Error: Could not capture frame.")
+                exit()
     
         # Detect faces in the frame
         faces = app.get(frame)
