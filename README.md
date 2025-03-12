@@ -2,7 +2,14 @@
 
 ## Setup
 
-- `git checkout mona_lisa_final`
+- `git clone git@github.com:camoverride/mona_lisa_override.git`
+- `cd mona_lisa_override`
+
+If using Ubuntu, do these additional commands:
+`sudo apt-get update`
+`sudo apt-get install python3-dev build-essential`
+
+Else:
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
