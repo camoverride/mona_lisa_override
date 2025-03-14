@@ -13,7 +13,7 @@ ubuntu_rotate: right # only for ubuntu.
 # The path to the background image.
 # This image should be the same dimensions as the monitor.
 # Find this with `wlr-randr`
-image_path: mona_lisa_1200_1920.jpg
+image_path: mona_lisa_1080_1920.jpg
 
 # Are we using a Raspberry Pi camera or a webcam (`picam`, `webcam`)?
 camera_type: webcam
