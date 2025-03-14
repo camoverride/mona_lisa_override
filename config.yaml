@@ -8,7 +8,7 @@ display_output: HDMI-A-1
 
 # How much to rotate the monitor
 rotation: 90
-ubuntu_rotate: left # only for ubuntu
+ubuntu_rotate: right # only for ubuntu
 
 # The path to the background image.
 # This image should be the same dimensions as the monitor.
@@ -22,4 +22,4 @@ camera_type: webcam
 system: ubuntu
 
 # Which output (only needed for Ubuntu)
-output_cable: HDMI-1
+output_cable: HDMI-8
