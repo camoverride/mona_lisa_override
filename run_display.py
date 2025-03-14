@@ -105,10 +105,17 @@ if __name__ == "__main__":
 
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
-    os.system(f"WAYLAND_DISPLAY={config['display_name']} wlr-randr --output {config['display_output']} --transform {config['rotation']}")
 
-    # Hide the mouse
-    os.system("unclutter -idle 0 &")
+    # If we're on a Pi, we can rotate like this and hide the mouse
+    if config["system"] == "pi":
+        os.system(f"WAYLAND_DISPLAY={config['display_name']} wlr-randr --output {config['display_output']} --transform {config['rotation']}")
+
+        # Hide the mouse
+        os.system("unclutter -idle 0 &")
+    # If we're on Ubuntu, we have to use this special script.
+    elif config["system"] == "ubuntu":
+       os.system(f"./gnome-randr.py --output DP-1 --rotate {config['ubuntu_rotate']}")
+
 
     # Load and display the initial background image
     background_image = cv2.imread(f"images/{config['image_path']}")
@@ -120,22 +127,12 @@ if __name__ == "__main__":
         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
 
     elif config["system"] == "ubuntu":
-        # Check if the display server is Xorg or Wayland
-        display_server = os.environ.get("XDG_SESSION_TYPE", "").lower()
-
-        # if display_server == "x11":  # Xorg
-        #     print("Ubuntu: using x11")
-        #     cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-        #     cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-        # elif display_server == "wayland":  # Wayland
-        print("Ubuntu: using wayland")
+        # Check if the display server is Xorg or Wayland.
+        # display_server = os.environ.get("XDG_SESSION_TYPE", "").lower()
+        print("Ubuntu: MUST be using wayland")
         # Workaround for Wayland: Manually resize the window to fill the screen
         cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
         cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-        # else:
-        #     print("Ubuntu: fallback to defaults!")
-        #     # Fallback for unknown display servers
-        #     cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
 
     cv2.imshow("Display Image", background_image)
     cv2.waitKey(10)

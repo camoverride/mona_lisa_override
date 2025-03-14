@@ -6,15 +6,20 @@
 - `cd mona_lisa_override`
 
 If using Ubuntu, do these additional commands:
-`sudo apt-get update`
-`sudo apt-get install python3-dev build-essential`
+- `sudo apt-get update`
+- `sudo apt-get install python3-dev build-essential`
 
-Else:
+Continue:
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
 - copy `inswapper_128.onnx` to the base directory of this repo.
+
+If using Ubuntu, you need to follow an additional step to rotate the screen [link](https://askubuntu.com/questions/1266783/how-to-rotate-screen-on-wayland)
+- `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
+- `chmod +x gnome-randr.py`
+
 
 ## Test
 
