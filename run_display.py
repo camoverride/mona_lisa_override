@@ -119,6 +119,8 @@ if __name__ == "__main__":
         # Then rotate
         os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
 
+        # Hide the mouse
+        os.system("unclutter -idle 0 &")
 
     # Load and display the initial background image
     background_image = cv2.imread(f"images/{config['image_path']}")
