@@ -114,7 +114,10 @@ if __name__ == "__main__":
         os.system("unclutter -idle 0 &")
     # If we're on Ubuntu, we have to use this special script.
     elif config["system"] == "ubuntu":
-       os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
+        # Reset to normal
+        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
+        # Then rotate
+        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
 
 
     # Load and display the initial background image
