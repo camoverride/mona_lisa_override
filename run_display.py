@@ -94,8 +94,14 @@ if __name__ == "__main__":
                                                                     # "size": (WIDTH, HEIGHT)}))
         picam2.start()
 
-    else:
-        pass #cv2 is already loaded
+    elif camera_type == "webcam":
+        # Initialize the cv2 camera
+        cap = cv2.VideoCapture(0)
+
+        # Check if the webcam is opened correctly
+        if not cap.isOpened():
+            print("Error: Could not open webcam.")
+            exit()
 
     # Rotate screen
     os.environ["DISPLAY"] = ':0'
@@ -107,9 +113,11 @@ if __name__ == "__main__":
     # Load and display the initial background image
     background_image = cv2.imread(f"images/{config['image_path']}")
     cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-    cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     cv2.imshow("Display Image", background_image)
+    cv2.waitKey(10)
+    if config["system"] == "pi":
+        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     # Timer to track last detected face
     last_face_time = time.time()
@@ -121,14 +129,6 @@ if __name__ == "__main__":
             frame = picam2.capture_array()
 
         elif camera_type == "webcam":
-            # Capture the frame from the webcam
-            cap = cv2.VideoCapture(0)
-
-            # Check if the webcam is opened correctly
-            if not cap.isOpened():
-                print("Error: Could not open webcam.")
-                exit()
-
             # Capture a single frame
             ret, frame = cap.read()
 

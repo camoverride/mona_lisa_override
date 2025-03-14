@@ -15,4 +15,7 @@ rotation: 90
 image_path: mona_lisa_1200_1920.jpg
 
 # Are we using a Raspberry Pi camera or a webcam (`picam`, `webcam`)?
-camera_type: picam
+camera_type: webcam
+
+# Which system are we using (for fullscreen code)? pi, ubuntu, macos
+system: ubuntu
