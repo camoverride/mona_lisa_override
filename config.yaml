@@ -22,4 +22,4 @@ camera_type: webcam
 system: ubuntu
 
 # Which output (only needed for Ubuntu)
-output_cable: HDMI-8
+output_cable: HDMI-1
