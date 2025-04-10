@@ -146,43 +146,52 @@ if __name__ == "__main__":
     last_face_time = time.time()
     display_face = False
 
-    while True:
-        if camera_type == "picam":
-            # Capture frame from picam
-            frame = picam2.capture_array()
+    try:
+        while True:
+            if camera_type == "picam":
+                # Capture frame from picam
+                frame = picam2.capture_array()
 
-        elif camera_type == "webcam":
-            # Capture a single frame
-            ret, frame = cap.read()
+            elif camera_type == "webcam":
+                # Capture a single frame
+                ret, frame = cap.read()
 
-            # Check if the frame was captured successfully
-            if not ret:
-                print("Error: Could not capture frame.")
-                exit()
-    
-        # Detect faces in the frame
-        faces = app.get(frame)
+                # Check if the frame was captured successfully
+                if not ret:
+                    print("Error: Could not capture frame.")
+                    exit()
         
-        # If a face is detected, process the image
-        if faces:
-            # Perform the face swap
-            new_image = swap_faces(source_image=frame, target_image=background_image)
+            # Detect faces in the frame
+            faces = app.get(frame)
+            
+            # If a face is detected, process the image
+            if faces:
+                # Perform the face swap
+                new_image = swap_faces(source_image=frame, target_image=background_image)
 
-            # Display the new image
-            cv2.imshow("Display Image", new_image)
+                # Display the new image
+                cv2.imshow("Display Image", new_image)
 
-            # Update the last face detection time
-            last_face_time = time.time()
-            display_face = True
-        else:
-            # If no face is detected for 10 seconds, switch back to background
-            if display_face and (time.time() - last_face_time > 10):
-                cv2.imshow("Display Image", background_image)
-                display_face = False
+                # Update the last face detection time
+                last_face_time = time.time()
+                display_face = True
+            else:
+                # If no face is detected for 10 seconds, switch back to background
+                if display_face and (time.time() - last_face_time > 10):
+                    cv2.imshow("Display Image", background_image)
+                    display_face = False
 
-        # Check for key presses
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+            # Check for key presses
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
 
-    # Release the camera and close windows
-    cv2.destroyAllWindows()
+        # Release the camera and close windows
+        cv2.destroyAllWindows()
+
+    finally:
+        print("Cleaning up resources...")
+        if camera_type == "webcam" and 'cap' in locals():
+            cap.release()
+        elif camera_type == "picam" and 'picam2' in locals():
+            picam2.stop()
+        cv2.destroyAllWindows()
