@@ -105,27 +105,25 @@ if __name__ == "__main__":
 
 
     if config["system"] == "ubuntu":
-        # Get the active user session and display
-        session_id = os.popen("loginctl list-sessions --no-legend | awk '{print $1}'").read().strip()
-        display = os.popen(f"loginctl show-session {session_id} -p Display --value").read().strip()
-        xauth_path = os.popen(f"loginctl show-session {session_id} -p XAuthPath --value").read().strip()
+        # Force Qt to use xcb platform and ensure X11 compatibility
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
+        os.environ["DISPLAY"] = ":0"
+        os.environ["XDG_SESSION_TYPE"] = "x11"
         
-        if display and xauth_path:
-            os.environ["DISPLAY"] = display
-            os.environ["XAUTHORITY"] = xauth_path
-        else:
-            # Fallback to XWayland defaults
-            os.environ["DISPLAY"] = ":0"
-            os.environ["XAUTHORITY"] = f"/run/user/{os.getuid()}/gdm/Xauthority"
-
+        # Set XAuthority path (critical for systemd services)
+        xauth_path = f"/run/user/{os.getuid()}/gdm/Xauthority"
+        if not os.path.exists(xauth_path):
+            xauth_path = f"/home/{os.getlogin()}/.Xauthority"
+        os.environ["XAUTHORITY"] = xauth_path
+        
         # Rotation commands
         os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
         os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
         
-        # Set up window and rotation
+        # Window setup
         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
+        
         # Hide mouse
         os.system("unclutter -idle 0 &")
 
