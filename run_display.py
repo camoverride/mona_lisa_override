@@ -105,20 +105,11 @@ if __name__ == "__main__":
 
 
     if config["system"] == "ubuntu":
-        # Force Qt to use xcb platform and ensure X11 compatibility
-        os.environ["QT_QPA_PLATFORM"] = "xcb"
+        # Simple display setup that matches your working manual config
         os.environ["DISPLAY"] = ":0"
-        os.environ["XDG_SESSION_TYPE"] = "x11"
-        
-        # Set XAuthority path (critical for systemd services)
-        xauth_path = f"/run/user/{os.getuid()}/gdm/Xauthority"
-        if not os.path.exists(xauth_path):
-            xauth_path = f"/home/{os.getlogin()}/.Xauthority"
-        os.environ["XAUTHORITY"] = xauth_path
         
         # Rotation commands
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
+        os.system(f"xrandr --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
         
         # Window setup
         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)

@@ -1,15 +1,15 @@
 [Unit]
 Description=display mona lisa
-After=default.target
+After=graphical.target
 
 [Service]
 Type=simple
 Restart=always
 WorkingDirectory=/home/cam/mona_lisa_override
 ExecStart=/home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py
+Environment=DISPLAY=:0
 StandardOutput=journal
 StandardError=journal
-Environment="PATH=/home/cam/mona_lisa_override/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical.target
