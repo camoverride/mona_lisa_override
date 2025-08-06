@@ -1,17 +1,16 @@
 [Unit]
 Description=Display Mona Lisa
-After=graphical-session.target
+After=graphical.target
+Wants=graphical.target
 
 [Service]
-Type=simple
-Restart=always
+User=cam
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/cam/.Xauthority
+Environment=WAYLAND_DISPLAY=wayland-0
 WorkingDirectory=/home/cam/mona_lisa_override
-Environment="PATH=/home/cam/mona_lisa_override/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Environment="DISPLAY=:0"
-Environment="XAUTHORITY=/home/cam/.Xauthority"
-Environment="WAYLAND_DISPLAY=wayland-0"
-Environment="QT_QPA_PLATFORM=wayland"
-ExecStart=/bin/bash -c "sleep 3 && /home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py"
+ExecStart=/home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py
+Restart=always
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=graphical.target

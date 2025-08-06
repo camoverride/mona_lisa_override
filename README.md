@@ -31,18 +31,18 @@ If using Ubuntu, you need to follow an additional step to rotate the screen [lin
 
 Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies. This is expected to run on a Raspberry Pi 5:
 
-- `mkdir -p ~/.config/systemd/user`
-- `cat display.service > ~/.config/systemd/user/display.service`
+- `sudo mkdir -p /etc/systemd/system/`
+- `sudo tee /etc/systemd/system/display.service < display.service`
 
 Start the service using the commands below:
 
-- `systemctl --user daemon-reload`
-- `systemctl --user enable display.service`
-- `systemctl --user start display.service`
+- `systemctl daemon-reload`
+- `systemctl enable display.service`
+- `systemctl start display.service`
 
 Start it on boot: `sudo loginctl enable-linger cam`
 
-Get the logs: `journalctl --user -u display.service`
+Get the logs: `sudo journalctl -u display.service`
 
 
 ## Increase System Longevity
