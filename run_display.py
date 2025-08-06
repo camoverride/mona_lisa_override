@@ -72,7 +72,7 @@ def swap_faces(source_image, target_image):
     target_face = target_faces[0]
 
     # Swap faces
-    swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)
+    swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)  # type: ignore
 
     return swapped_face
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     camera_type = config["camera_type"]
 
     if camera_type == "picam":
-        from picamera2 import Picamera2
+        from picamera2 import Picamera2 # type: ignore
 
         # Initialize the picamera
         picam2 = Picamera2()
@@ -103,8 +103,32 @@ if __name__ == "__main__":
             print("Error: Could not open webcam.")
             exit()
 
-    # Rotate screen
-    os.environ["DISPLAY"] = ':0'
+
+    if config["system"] == "ubuntu":
+        # Get the active user session and display
+        session_id = os.popen("loginctl list-sessions --no-legend | awk '{print $1}'").read().strip()
+        display = os.popen(f"loginctl show-session {session_id} -p Display --value").read().strip()
+        xauth_path = os.popen(f"loginctl show-session {session_id} -p XAuthPath --value").read().strip()
+        
+        if display and xauth_path:
+            os.environ["DISPLAY"] = display
+            os.environ["XAUTHORITY"] = xauth_path
+        else:
+            # Fallback to XWayland defaults
+            os.environ["DISPLAY"] = ":0"
+            os.environ["XAUTHORITY"] = f"/run/user/{os.getuid()}/gdm/Xauthority"
+
+        # Rotation commands
+        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
+        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
+        
+        # Set up window and rotation
+        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+        # Hide mouse
+        os.system("unclutter -idle 0 &")
+
 
     # If we're on a Pi, we can rotate like this and hide the mouse
     if config["system"] == "pi":
@@ -112,32 +136,19 @@ if __name__ == "__main__":
 
         # Hide the mouse
         os.system("unclutter -idle 0 &")
-    # If we're on Ubuntu, we have to use this special script.
-    elif config["system"] == "ubuntu":
-        # Reset to normal
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
-        # Then rotate
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
 
-        # Hide the mouse
-        os.system("unclutter -idle 0 &")
-
-    # Load and display the initial background image
-    background_image = cv2.imread(f"images/{config['image_path']}")
-    if config["system"] == "pi":
         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
 
     elif config["system"] == "macos":
         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
 
-    elif config["system"] == "ubuntu":
-        # Check if the display server is Xorg or Wayland.
-        # display_server = os.environ.get("XDG_SESSION_TYPE", "").lower()
-        print("Ubuntu: MUST be using wayland")
-        # Workaround for Wayland: Manually resize the window to fill the screen
-        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
-        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+
+
+    # Load and display the initial background image
+    background_image = cv2.imread(f"images/{config['image_path']}")
 
     cv2.imshow("Display Image", background_image)
     cv2.waitKey(10)
@@ -170,7 +181,7 @@ if __name__ == "__main__":
                 new_image = swap_faces(source_image=frame, target_image=background_image)
 
                 # Display the new image
-                cv2.imshow("Display Image", new_image)
+                cv2.imshow("Display Image", new_image)  # type: ignore
 
                 # Update the last face detection time
                 last_face_time = time.time()
