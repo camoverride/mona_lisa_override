@@ -6,13 +6,12 @@ After=graphical-session.target
 Type=simple
 Restart=always
 WorkingDirectory=/home/cam/mona_lisa_override
-
 Environment="PATH=/home/cam/mona_lisa_override/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Environment="DISPLAY=:0"
 Environment="XAUTHORITY=/home/cam/.Xauthority"
 Environment="WAYLAND_DISPLAY=wayland-0"
-
-ExecStart=/home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py
+Environment="QT_QPA_PLATFORM=wayland"
+ExecStart=/bin/bash -c "sleep 3 && /home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py"
 
 [Install]
 WantedBy=graphical-session.target
