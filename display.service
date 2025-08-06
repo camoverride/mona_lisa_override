@@ -1,17 +1,15 @@
 [Unit]
-Description=Display Mona Lisa Fullscreen
-After=graphical-session.target
-Requires=graphical-session.target
+Description=display mona lisa
+After=default.target
 
 [Service]
 Type=simple
-ExecStart=/home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py
 Restart=always
 WorkingDirectory=/home/cam/mona_lisa_override
-
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/home/cam/.Xauthority
-Environment=WAYLAND_DISPLAY=wayland-0
+ExecStart=/home/cam/mona_lisa_override/.venv/bin/python /home/cam/mona_lisa_override/run_display.py
+StandardOutput=journal
+StandardError=journal
+Environment="PATH=/home/cam/mona_lisa_override/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target
