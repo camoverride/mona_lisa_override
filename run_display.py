@@ -190,8 +190,7 @@ if __name__ == "__main__":
 
     finally:
         print("Cleaning up resources...")
-        if camera_type == "webcam" and 'cap' in locals():
-            cap.release()
-        elif camera_type == "picam" and 'picam2' in locals():
+        cap.release()
+        if camera_type == "picam" and 'picam2' in locals():
             picam2.stop()
         cv2.destroyAllWindows()
