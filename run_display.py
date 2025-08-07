@@ -187,6 +187,7 @@ if __name__ == "__main__":
 
         # Release the camera and close windows
         cv2.destroyAllWindows()
+        cap.release()
 
     finally:
         print("Cleaning up resources...")
