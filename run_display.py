@@ -40,6 +40,9 @@ def set_up_display(operating_system : str) -> None:
 
     # Ubuntu.
     elif operating_system == "ubuntu":
+        # Access the display. TODO: check if still necessary!
+        os.environ["DISPLAY"] = ':0'
+
         # Hide the mouse
         os.system("unclutter -idle 0 &")
 
@@ -96,7 +99,6 @@ if __name__ == "__main__":
 
     # Display the default background image.
     cv2.imshow("Display Image", background_image)
-    cv2.waitKey(10)
 
     # Timer to track last detected face.
     last_face_time = time.time()
@@ -106,6 +108,8 @@ if __name__ == "__main__":
     try:
         # Main event loop.
         while True:
+            # Wait time
+            time.sleep(1)
 
             # Picam image capture.
             if os_name == "raspbian":
