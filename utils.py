@@ -127,7 +127,7 @@ def _get_display_info(operating_system : str) -> dict:
     display_info = {
         "width": width,
         "height": height,
-        "output": output_device
+        "output_device": output_device
     }
 
     # Print debug.
