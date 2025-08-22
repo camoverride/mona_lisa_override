@@ -10,6 +10,18 @@ os.environ["DISPLAY"] = ':0'
 os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
 os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
 time.sleep(5)
+import numpy as np
+
+# Create window as normal first
+cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
+
+# Show an image first, THEN set fullscreen
+dummy_image = np.zeros((100, 100, 3), dtype=np.uint8)
+cv2.imshow("Display Image", dummy_image)
+cv2.waitKey(100)  # Brief wait to ensure window is created
+
+# Now set fullscreen
+cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 
 def set_up_display(operating_system : str) -> None:
