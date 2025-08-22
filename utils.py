@@ -120,7 +120,7 @@ def _get_display_info(operating_system : str) -> dict:
 
         # Grep through connected displays to get the correct one.
         command = "xrandr | grep ' connected'"
-        result = subprocess.check_output(command, env=env, text=True)
+        result = subprocess.check_output(command, env=env, shell=True, text=True)
         output_device = result.split(" ")[0]
 
     # Store everything in a dict.
