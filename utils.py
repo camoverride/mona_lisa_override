@@ -130,6 +130,11 @@ def _get_display_info(operating_system : str) -> dict:
         "output": output_device
     }
 
+    # Print debug.
+    print(f"Monitor width: {width}")
+    print(f"Monitor height: {height}")
+    print(f"Output: {output_device}")
+
     return display_info
 
 
