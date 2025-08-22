@@ -6,6 +6,11 @@ from swap_utils import swap_faces
 from utils import get_os_name, rotate_screen
 
 
+os.environ["DISPLAY"] = ':0'
+os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
+os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
+time.sleep(5)
+
 
 def set_up_display(operating_system : str) -> None:
     """
@@ -42,8 +47,6 @@ def set_up_display(operating_system : str) -> None:
     elif operating_system == "ubuntu":
         # Access the display. TODO: check if still necessary!
         os.environ["DISPLAY"] = ':0'
-
-        time.sleep(5)
 
         # Hide the mouse
         os.system("unclutter -idle 0 &")
