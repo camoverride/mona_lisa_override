@@ -109,7 +109,7 @@ if __name__ == "__main__":
         # Main event loop.
         while True:
             # Wait time
-            time.sleep(1)
+            time.sleep(0.1)
 
             # Picam image capture.
             if os_name == "raspbian":
@@ -143,7 +143,8 @@ if __name__ == "__main__":
                     display_face = False
 
             # Check for key presses
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q") or key == 27:  # 'q' or ESC key
                 break
 
         # Release the camera and close windows
@@ -154,14 +155,31 @@ if __name__ == "__main__":
     # Clean up camera resources.
     finally:
         print("Cleaning up resources...")
-
-        # Ubuntu and MacOS cleanup.
+        
+        # Force destroy all windows first
+        try:
+            cv2.destroyAllWindows()
+            cv2.waitKey(1)  # Process window destruction events
+        except:
+            pass
+        
+        # Then cleanup cameras
         if os_name in ["ubuntu", "macos"]:
-            cap.release()
-
-        # Raspbian cleanup.
+            try:
+                cap.release()
+            except:
+                pass
+                
         if os_name == "raspbian":
-            picam2.stop()
-
-        # Double check to clear all windows.
-        cv2.destroyAllWindows()
+            try:
+                picam2.stop()
+            except:
+                pass
+        
+        # Extra cleanup for good measure
+        try:
+            cv2.destroyAllWindows()
+        except:
+            pass
+            
+        print("Cleanup complete")
