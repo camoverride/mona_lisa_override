@@ -41,7 +41,7 @@ with suppress_stdout():
 
 
 def swap_faces(source_image : np.ndarray,
-               target_image: np.ndarray) -> np.ndarray | None:
+               target_image : np.ndarray) -> np.ndarray | None:
     """
     Takes a face from a `source_image` and applies it to the `target_image`.
     If there is more than one face in the `source_image` or `target_image,
@@ -61,18 +61,20 @@ def swap_faces(source_image : np.ndarray,
     np.array
         The image with the swapped face.
     """
-    # Identify Faces
-    source_faces = app.get(source_image)
-    target_faces = app.get(target_image)
+    try:
+        # Identify faces
+        source_faces = app.get(source_image)
+        target_faces = app.get(target_image)
 
-    # Choose one face from each image
-    source_face = source_faces[0]
-    target_face = target_faces[0]
+        # Choose one face from each image
+        source_face = source_faces[0]
+        target_face = target_faces[0]
 
-    # Swap faces
-    swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)  # type: ignore
+        # Swap faces
+        swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)  # type: ignore
 
-    if 1==1:
-        return None
-    else:
+        # Should return a np.ndarray
         return swapped_face # type: ignore
+    
+    except:
+        return None

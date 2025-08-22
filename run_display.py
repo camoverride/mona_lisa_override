@@ -120,22 +120,17 @@ if __name__ == "__main__":
                     print("Error: Could not capture frame.")
                     exit()
 
-            # Detect faces in the frame.
-            faces = app.get(frame)  # type: ignore
+            # Swap faces
+            swapped_face = swap_faces(source_image=frame,
+                                      target_image=background_image)
 
-            # If a face is detected, process the image.
-            if faces:
-                # Perform the face swap.
-                new_image = swap_faces(source_image=frame,
-                                       target_image=background_image)
+            if swapped_face:
+                # Display the new image.
+                cv2.imshow("Display Image", swapped_face)
 
-                if new_image:
-                    # Display the new image.
-                    cv2.imshow("Display Image", new_image)
-
-                    # Update the last face detection time.
-                    last_face_time = time.time()
-                    display_face = True
+                # Update the last face detection time.
+                last_face_time = time.time()
+                display_face = True
 
             else:
                 # If no face is detected for 10 seconds, switch back to background.
