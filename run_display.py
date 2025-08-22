@@ -30,9 +30,6 @@ def set_up_display(operating_system : str) -> None:
         # Access the display. TODO: check if still necessary!
         os.environ["DISPLAY"] = ':0'
 
-        # CRITICAL: Wait for display to be ready.
-        time.sleep(5)
-
         # Hide the mouse.
         os.system("unclutter -idle 0 &")
 
@@ -45,9 +42,6 @@ def set_up_display(operating_system : str) -> None:
     elif operating_system == "ubuntu":
         # Access the display. TODO: check if still necessary!
         os.environ["DISPLAY"] = ':0'
-
-        # CRITICAL: Wait for display to be ready.
-        time.sleep(5)
 
         # Hide the mouse
         os.system("unclutter -idle 0 &")

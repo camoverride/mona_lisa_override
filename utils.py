@@ -2,7 +2,6 @@ import os
 import platform
 import re
 import subprocess
-import time
 
 
 
@@ -114,9 +113,6 @@ def _get_display_info(operating_system : str) -> dict:
         # Use xrandr to get monitor dimensions.
         env = os.environ.copy()
         env['DISPLAY'] = ':0'
-
-        # CRITICAL: Wait for display to be ready.
-        time.sleep(5)
 
         output = subprocess.check_output(["xrandr"], env=env, text=True)
         match = re.search(r"current\s+(\d+)\s+x\s+(\d+)", output)
