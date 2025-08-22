@@ -6,24 +6,6 @@ from swap_utils import swap_faces
 from utils import get_os_name, rotate_screen
 
 
-os.environ["DISPLAY"] = ':0'
-os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
-os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
-time.sleep(5)
-import numpy as np
-
-# Create window as normal first
-cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
-
-# Show an image first, THEN set fullscreen
-dummy_image = np.zeros((100, 100, 3), dtype=np.uint8)
-cv2.imshow("Display Image", dummy_image)
-cv2.waitKey(100)  # Brief wait to ensure window is created
-
-# Now set fullscreen
-cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-
 def set_up_display(operating_system : str) -> None:
     """
     Sets the OpenCV display canvas to be fullscreen by creating a
@@ -42,34 +24,53 @@ def set_up_display(operating_system : str) -> None:
     None
         Creates a fullscreen canvas for displaying images.
     """
-    # Raspbian.
-    if operating_system == "raspbian":
-        # Access the display. TODO: check if still necessary!
-        os.environ["DISPLAY"] = ':0'
+    # This is an absolutely disgusting hack to get fullscreen enables.
+    os.environ["DISPLAY"] = ':0'
+    os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
+    os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
+    time.sleep(5)
+    import numpy as np
 
-        # Hide the mouse.
-        os.system("unclutter -idle 0 &")
+    # Create window as normal first
+    cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
 
-        # Set up the display.
-        if operating_system == "raspbian":
-            cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-            cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    # Show an image first, THEN set fullscreen
+    dummy_image = np.zeros((100, 100, 3), dtype=np.uint8)
+    cv2.imshow("Display Image", dummy_image)
+    cv2.waitKey(100)  # Brief wait to ensure window is created
 
-    # Ubuntu.
-    elif operating_system == "ubuntu":
-        # Access the display. TODO: check if still necessary!
-        os.environ["DISPLAY"] = ':0'
+    # Now set fullscreen
+    cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-        # Hide the mouse
-        os.system("unclutter -idle 0 &")
 
-        # Workaround for Wayland: Manually resize the window to fill the screen
-        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
-        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    # # Raspbian.
+    # if operating_system == "raspbian":
+    #     # Access the display. TODO: check if still necessary!
+    #     os.environ["DISPLAY"] = ':0'
 
-    # MacOS.
-    elif operating_system == "macos":
-        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+    #     # Hide the mouse.
+    #     os.system("unclutter -idle 0 &")
+
+    #     # Set up the display.
+    #     if operating_system == "raspbian":
+    #         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+    #         cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # # Ubuntu.
+    # elif operating_system == "ubuntu":
+    #     # Access the display. TODO: check if still necessary!
+    #     os.environ["DISPLAY"] = ':0'
+
+    #     # Hide the mouse
+    #     os.system("unclutter -idle 0 &")
+
+    #     # Workaround for Wayland: Manually resize the window to fill the screen
+    #     cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
+    #     cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # # MacOS.
+    # elif operating_system == "macos":
+    #     cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
 
 
 
