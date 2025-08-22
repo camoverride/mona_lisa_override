@@ -111,14 +111,16 @@ def _get_display_info(operating_system : str) -> dict:
     # Ubuntu
     elif operating_system == "ubuntu":
         # Use xrandr to get monitor dimensions.
-        output = subprocess.check_output(["DISPLAY=:0 xrandr"], text=True)
+        env = os.environ.copy()
+        env['DISPLAY'] = ':0'
+        output = subprocess.check_output(["xrandr"], env=env, text=True)
         match = re.search(r"current\s+(\d+)\s+x\s+(\d+)", output)
         if match:
             width, height = map(int, match.groups())
 
         # Grep through connected displays to get the correct one.
-        command = "DISPLAY=:0 xrandr | grep ' connected'"
-        result = subprocess.check_output(command, shell=True, text=True)
+        command = "xrandr | grep ' connected'"
+        result = subprocess.check_output(command, env=env, text=True)
         output_device = result.split(" ")[0]
 
     # Store everything in a dict.
