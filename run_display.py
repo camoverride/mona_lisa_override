@@ -124,7 +124,7 @@ if __name__ == "__main__":
             swapped_face = swap_faces(source_image=frame,
                                       target_image=background_image)
 
-            if swapped_face:
+            if swapped_face is not None:
                 # Display the new image.
                 cv2.imshow("Display Image", swapped_face)
 
