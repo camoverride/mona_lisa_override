@@ -57,3 +57,7 @@ Follow these steps in order:
 ## Benchmark
 
 - ~20 seconds to update on Pi 5
+
+
+
+TEST PHOTO to check camera visibility!

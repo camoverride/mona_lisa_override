@@ -1,182 +1,144 @@
-import os
-import sys
-import time
-from contextlib import contextmanager
-
-import yaml
 import cv2
-import insightface
-from insightface.app import FaceAnalysis
-import onnxruntime as ort
+import os
+import time
+import yaml
+from swap_utils import swap_faces
+from utils import get_os_name, rotate_screen
 
 
 
-# Set logging level to error to suppress warnings
-ort.set_default_logger_severity(3)
-import warnings
-
-# Suppress the specific FutureWarning
-warnings.filterwarnings("ignore",
-    category=FutureWarning,
-    module="insightface.utils.transform")
-warnings.filterwarnings("ignore",
-    message="Specified provider 'CUDAExecutionProvider' is not in available provider names",
-    category=UserWarning,
-    module="onnxruntime.capi.onnxruntime_inference_collection"
-)
-
-# Suppress this warning too.
-@contextmanager
-def suppress_stdout():
-    with open(os.devnull, 'w') as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
-
-# Suppressing stdout during model preparation
-with suppress_stdout():
-    app = FaceAnalysis(name="buffalo_l")
-    app.prepare(ctx_id=0, det_size=(640, 640))
-    swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
-
-
-def swap_faces(source_image, target_image):
+def set_up_display(operating_system : str) -> None:
     """
-    Takes a face from a `source_image` and applies it to the `target_image`.
-    If there is more than one face in the `source_image` or `target_image,
-    the first face is used.
-
-    TODO: Apply `source_image` faces to ALL faces in `target_image`
+    Sets the OpenCV display canvas to be fullscreen by creating a
+    cv2.namedWindow object addressable as "Display Image".
 
     Parameters
     ----------
-    source_image : np.array
-        Image encoded as an array
-    target_image : np.array
-        Image encoded as an array
+    operating_system : str
+        The name of the OS. Current options are:
+            - "raspbian"
+            - "ubuntu"
+            - "macos"
 
     Returns
     -------
-    np.array
-        The image with the swapped face.
+    None
+        Creates a fullscreen canvas for displaying images.
     """
-    # Identify Faces
-    source_faces = app.get(source_image)
-    target_faces = app.get(target_image)
+    # Raspbian.
+    if operating_system == "raspbian":
+        # Access the display. TODO: check if still necessary!
+        os.environ["DISPLAY"] = ':0'
 
-    # Choose one face from each image
-    source_face = source_faces[0]
-    target_face = target_faces[0]
+        # Hide the mouse.
+        os.system("unclutter -idle 0 &")
 
-    # Swap faces
-    swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)
+        # Set up the display.
+        if operating_system == "raspbian":
+            cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+            cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-    return swapped_face
+    # Ubuntu.
+    elif operating_system == "ubuntu":
+        # Hide the mouse
+        os.system("unclutter -idle 0 &")
+
+        # Workaround for Wayland: Manually resize the window to fill the screen
+        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # MacOS.
+    elif operating_system == "macos":
+        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+
 
 
 if __name__ == "__main__":
-    # Load the config file
-    with open("config.yaml", "r") as config_file:
-        config = yaml.safe_load(config_file)
+    # Open the config to get the rotation and default image.
+    with open("config.yaml", "r") as file:
+        config = yaml.safe_load(file)
 
-    # Which type of camera are we using? (options: "picam", "webcam")
-    camera_type = config["camera_type"]
+    # Get the name of the OS. Should be either "raspbian", "ubuntu", or "macos".
+    os_name = get_os_name()
 
-    if camera_type == "picam":
-        from picamera2 import Picamera2
+    # Rotate the screen.
+    rotate_screen(operating_system=os_name,
+                  rotation=config["rotation"])
 
-        # Initialize the picamera
+    # Set up the display to show images.
+    set_up_display(operating_system=os_name)
+
+
+    # Start the camera stream.
+    # Raspbian: NOTE: assumes we are using the picam, NOT a webcam!
+    if os_name == "raspbian":
+        from picamera2 import Picamera2  # type: ignore
+
+        # Initialize the picamera.
         picam2 = Picamera2()
         picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
                                                                     # "size": (WIDTH, HEIGHT)}))
         picam2.start()
 
-    elif camera_type == "webcam":
-        # Initialize the cv2 camera
+    # Ubuntu or MacOS. 
+    elif os_name in ["ubuntu", "macos"]:
+        # Initialize the cv2 camera.
         cap = cv2.VideoCapture(0)
 
-        # Check if the webcam is opened correctly
+        # Check if the webcam is opened correctly.
         if not cap.isOpened():
             print("Error: Could not open webcam.")
             exit()
 
-    # Rotate screen
-    os.environ["DISPLAY"] = ':0'
 
-    # If we're on a Pi, we can rotate like this and hide the mouse
-    if config["system"] == "pi":
-        os.system(f"WAYLAND_DISPLAY={config['display_name']} wlr-randr --output {config['display_output']} --transform {config['rotation']}")
+    # Set the background image.
+    background_image = cv2.imread(f"images/{config['base_image_path']}")
 
-        # Hide the mouse
-        os.system("unclutter -idle 0 &")
-    # If we're on Ubuntu, we have to use this special script.
-    elif config["system"] == "ubuntu":
-        # Reset to normal
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate normal")
-        # Then rotate
-        os.system(f"./gnome-randr.py --output {config['output_cable']} --rotate {config['ubuntu_rotate']}")
-
-        # Hide the mouse
-        os.system("unclutter -idle 0 &")
-
-    # Load and display the initial background image
-    background_image = cv2.imread(f"images/{config['image_path']}")
-    if config["system"] == "pi":
-        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-    elif config["system"] == "macos":
-        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-
-    elif config["system"] == "ubuntu":
-        # Check if the display server is Xorg or Wayland.
-        # display_server = os.environ.get("XDG_SESSION_TYPE", "").lower()
-        print("Ubuntu: MUST be using wayland")
-        # Workaround for Wayland: Manually resize the window to fill the screen
-        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
-        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
+    # Display the default background image.
     cv2.imshow("Display Image", background_image)
     cv2.waitKey(10)
 
-    # Timer to track last detected face
+    # Timer to track last detected face.
     last_face_time = time.time()
     display_face = False
 
+    # Catch errors to clean up camera resources.
     try:
+        # Main event loop.
         while True:
-            if camera_type == "picam":
-                # Capture frame from picam
-                frame = picam2.capture_array()
 
-            elif camera_type == "webcam":
-                # Capture a single frame
+            # Picam image capture.
+            if os_name == "raspbian":
+                frame = picam2.capture_array() # type: ignore
+
+            # Webcam image capture.
+            if os_name in ["ubuntu", "macos"]:
                 ret, frame = cap.read()
 
-                # Check if the frame was captured successfully
+                # Check if the frame was captured successfully.
                 if not ret:
                     print("Error: Could not capture frame.")
                     exit()
-        
-            # Detect faces in the frame
-            faces = app.get(frame)
-            
-            # If a face is detected, process the image
+
+            # Detect faces in the frame.
+            faces = app.get(frame)  # type: ignore
+
+            # If a face is detected, process the image.
             if faces:
-                # Perform the face swap
-                new_image = swap_faces(source_image=frame, target_image=background_image)
+                # Perform the face swap.
+                new_image = swap_faces(source_image=frame,
+                                       target_image=background_image)
 
-                # Display the new image
-                cv2.imshow("Display Image", new_image)
+                if new_image:
+                    # Display the new image.
+                    cv2.imshow("Display Image", new_image)
 
-                # Update the last face detection time
-                last_face_time = time.time()
-                display_face = True
+                    # Update the last face detection time.
+                    last_face_time = time.time()
+                    display_face = True
+
             else:
-                # If no face is detected for 10 seconds, switch back to background
+                # If no face is detected for 10 seconds, switch back to background.
                 if display_face and (time.time() - last_face_time > 10):
                     cv2.imshow("Display Image", background_image)
                     display_face = False
@@ -189,9 +151,18 @@ if __name__ == "__main__":
         cv2.destroyAllWindows()
         cap.release()
 
+
+    # Clean up camera resources.
     finally:
         print("Cleaning up resources...")
-        cap.release()
-        if camera_type == "picam" and 'picam2' in locals():
+
+        # Ubuntu and MacOS cleanup.
+        if os_name in ["ubuntu", "macos"]:
+            cap.release()
+
+        # Raspbian cleanup.
+        if os_name == "raspbian":
             picam2.stop()
+
+        # Double check to clear all windows.
         cv2.destroyAllWindows()

@@ -1,25 +1,7 @@
-# Name of the display server protocol.
-# Find this with the terminal command: `echo $WAYLAND_DISPLAY`
-display_name: wayland-0
+# The base image onto which a face will be swapped.
+# Should be the same dimension as the monitor so that is does not have to be resized.
+# Check with:  DISPLAY=:0 xrandr | grep " connected"
+base_image_path: mona_lisa_1080_1920.jpg
 
-# Name of the HDMI output port.
-# Find this with the terminal command: `wlr-randr` or `xrandr --query`
-display_output: HDMI-A-1
-
-# How much to rotate the monitor
-rotation: 90
-ubuntu_rotate: right # only for ubuntu.
-
-# The path to the background image.
-# This image should be the same dimensions as the monitor.
-# Find this with `wlr-randr`
-image_path: mona_lisa_1080_1920.jpg
-
-# Are we using a Raspberry Pi camera or a webcam (`picam`, `webcam`)?
-camera_type: webcam
-
-# Which system are we using (for fullscreen code)? pi, ubuntu, macos
-system: ubuntu
-
-# Which output (only needed for Ubuntu) - `xrandr --query | grep " connected" | awk '{print $1}'`
-output_cable: HDMI-1
+# Which direction to rotate the monitor.
+rotation: left
