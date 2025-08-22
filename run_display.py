@@ -25,41 +25,36 @@ def set_up_display(operating_system : str) -> None:
     None
         Creates a fullscreen canvas for displaying images.
     """
-    # Set display variable
-    os.environ["DISPLAY"] = ':0'
-    
-    # Hide mouse
-    os.system("unclutter -idle 0 &")
-    
-    # Simple retry loop for fullscreen
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            if operating_system in ["raspbian", "ubuntu"]:
-                cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-                cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-                
-                # Test if it actually went fullscreen
-                time.sleep(0.5)  # Brief pause
-                is_fullscreen = cv2.getWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN)
-                
-                if is_fullscreen == cv2.WINDOW_FULLSCREEN:
-                    print("Successfully set fullscreen")
-                    break
-                else:
-                    print(f"Fullscreen failed attempt {attempt + 1}, retrying...")
-                    cv2.destroyAllWindows()
-                    time.sleep(1)  # Wait a bit before retry
-                    
-            elif operating_system == "macos":
-                cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-                break
-                
-        except Exception as e:
-            print(f"Error setting up display (attempt {attempt + 1}): {e}")
-            time.sleep(1)
-    
-    print("Display setup complete")
+    # Raspbian.
+    if operating_system == "raspbian":
+        # Access the display. TODO: check if still necessary!
+        os.environ["DISPLAY"] = ':0'
+
+        # Hide the mouse.
+        os.system("unclutter -idle 0 &")
+
+        # Set up the display.
+        if operating_system == "raspbian":
+            cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+            cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # Ubuntu.
+    elif operating_system == "ubuntu":
+        # Access the display. TODO: check if still necessary!
+        os.environ["DISPLAY"] = ':0'
+
+        time.sleep(5)
+
+        # Hide the mouse
+        os.system("unclutter -idle 0 &")
+
+        # Workaround for Wayland: Manually resize the window to fill the screen
+        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # MacOS.
+    elif operating_system == "macos":
+        cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
 
 
 
