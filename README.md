@@ -6,24 +6,30 @@
 - `cd mona_lisa_override`
 
 If using Ubuntu, do these additional commands:
+
 - `sudo apt-get update`
 - `sudo apt-get install python3-dev build-essential`
 
 Continue:
+
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
 - copy `inswapper_128.onnx` to the base directory of this repo.
 
-If using Ubuntu, you need to follow an additional step to rotate the screen [link](https://askubuntu.com/questions/1266783/how-to-rotate-screen-on-wayland)
+If using Ubuntu, you need to follow an additional step to rotate the screen [link](https://askubuntu.com/questions/1266783/how-to-rotate-screen-on-wayland):
+
 - `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
 - `chmod +x gnome-randr.py`
 
 
 ## Test
 
-- `export DISPLAY=:0`
+Test the camera using `cheese`
+
+Run the code:
+
 - `python run_display.py`
 
 
@@ -40,24 +46,25 @@ Start the service using the commands below:
 - `systemctl --user enable display.service`
 - `systemctl --user start display.service`
 
-Start it on boot: `sudo loginctl enable-linger cam`
+Start it on boot: 
 
-Get the logs: `journalctl --user -u display.service`
+- `sudo loginctl enable-linger cam`
+
+Get the logs: 
+
+- `journalctl --user -u display.service`
 
 
 ## Increase System Longevity
 
 Follow these steps in order:
-- Install tailscale for remote access and debugging.
-- Configure backup wifi networks
-- Configure a Read-Only Overlay Filesystem
-- Set up periodic reboots (cron job)
+
+- (1) Install tailscale for remote access and debugging.
+- (2) Configure backup wifi networks.
+- (3) Configure a Read-Only Overlay Filesystem
+- (4) Set up periodic reboots (systemd).
 
 
 ## Benchmark
 
 - ~20 seconds to update on Pi 5
-
-
-
-TEST PHOTO to check camera visibility!
