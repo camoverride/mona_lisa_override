@@ -2,6 +2,7 @@ import os
 import platform
 import re
 import subprocess
+import time
 
 
 
@@ -185,10 +186,14 @@ def rotate_screen(operating_system : str,
         # Set to normal.
         os.system(f"./gnome-randr.py --output {display_info['output_device']} \
                     --rotate normal")
+        
+        time.sleep(2)
 
         # Then rotate.
         os.system(f"./gnome-randr.py --output {display_info['output_device']} \
                     --rotate {rotation}")
+        
+        time.sleep(2)
 
     # MacOS.
     elif operating_system == "macos":
