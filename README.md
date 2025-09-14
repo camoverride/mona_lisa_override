@@ -3,7 +3,9 @@
 Code for my face-swapping Mona Lisa portrait 🧑‍🎨
 
 
-[View Mona Lisa Override](images/mona_lisa_override.jpg)
+![View Mona Lisa Override](images/mona_lisa_override.jpg)
+
+
 ## Setup
 
 Ubuntu:
