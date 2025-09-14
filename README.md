@@ -1,32 +1,52 @@
 # Mona Lisa Override
 
+Code for my face-swapping Mona Lisa portrait 🧑‍🎨
+
+
+[View Mona Lisa Override](images/mona_lisa_override.jpg)
 ## Setup
+
+Ubuntu:
 
 - `git clone git@github.com:camoverride/mona_lisa_override.git`
 - `cd mona_lisa_override`
-
-If using Ubuntu, do these additional commands:
-
+- `python -m venv .venv`
+- `source .venv/bin/activate`
 - `sudo apt-get update`
 - `sudo apt-get install python3-dev build-essential`
+- `pip install -r requirements.txt`
+- `sudo apt-get install unclutter`
+- copy `inswapper_128.onnx` to the base directory of this repo.
+- `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
+- `chmod +x gnome-randr.py`
 
-Continue:
+Raspberry Pi w/ Picam:
 
+- `git clone git@github.com:camoverride/mona_lisa_override.git`
+- `cd mona_lisa_override`
 - `python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera` package.)
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
 - copy `inswapper_128.onnx` to the base directory of this repo.
+- `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
+- `chmod +x gnome-randr.py`
 
-If using Ubuntu, you need to follow an additional step to rotate the screen [link](https://askubuntu.com/questions/1266783/how-to-rotate-screen-on-wayland):
+MacOS (for testing):
 
+- `git clone git@github.com:camoverride/mona_lisa_override.git`
+- `cd mona_lisa_override`
+- `python -m venv .venv`
+- `source .venv/bin/activate`
+- `pip install -r requirements.txt`
+- copy `inswapper_128.onnx` to the base directory of this repo.
 - `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
 - `chmod +x gnome-randr.py`
 
 
 ## Test
 
-Test the camera using `cheese`
+Test the camera using `cheese` to make sure the scene is visible.
 
 Run the code:
 
@@ -35,7 +55,7 @@ Run the code:
 
 ## Run in Production
 
-Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies. This is expected to run on a Raspberry Pi 5:
+Start a service with *systemd*. This will start the program when the computer starts and revive it when it dies. This is expected to run on a Raspberry Pi 5 or Beelink running Ubuntu:
 
 - `mkdir -p ~/.config/systemd/user`
 - `cat display.service > ~/.config/systemd/user/display.service`
@@ -48,7 +68,7 @@ Start the service using the commands below:
 
 Start it on boot: 
 
-- `sudo loginctl enable-linger cam`
+- `sudo loginctl enable-linger $(whoami)`
 
 Get the logs: 
 
@@ -68,3 +88,4 @@ Follow these steps in order:
 ## Benchmark
 
 - ~20 seconds to update on Pi 5
+- ~1 sec on Beelink (Ubuntu)

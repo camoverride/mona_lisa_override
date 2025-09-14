@@ -1,7 +1,10 @@
 # The base image onto which a face will be swapped.
-# Should be the same dimension as the monitor so that is does not have to be resized.
+# Should be the same dimension as the monitor so that is does not have to be re-sized.
 # Check with:  DISPLAY=:0 xrandr | grep " connected"
 base_image_path: mona_lisa_1080_1920.jpg
 
 # Which direction to rotate the monitor.
 rotation: left
+
+# How long until we revert to the background image.
+revert_to_background_time: 10

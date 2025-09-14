@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 import os
 import time
 import yaml
@@ -6,6 +7,9 @@ from swap_utils import swap_faces
 from utils import get_os_name, rotate_screen
 
 
+
+# NOTE: This needs to be defined here because cv2 windows have trouble
+# when shared between modules.
 def set_up_display(operating_system : str) -> None:
     """
     Sets the OpenCV display canvas to be fullscreen by creating a
@@ -24,53 +28,43 @@ def set_up_display(operating_system : str) -> None:
     None
         Creates a fullscreen canvas for displaying images.
     """
-    # This is an absolutely disgusting hack to get fullscreen enables.
-    os.environ["DISPLAY"] = ':0'
-    os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
-    os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
-    time.sleep(5)
-    import numpy as np
+    # Ubuntu
+    # NOTE: This is an absolutely disgusting hack to get fullscreen enabled.
+    if operating_system == "ubuntu":
+        os.environ["DISPLAY"] = ':0'
+        os.environ["QT_QPA_PLATFORM"] = "xcb"  # Force Qt to use X11
+        os.environ["GDK_BACKEND"] = "x11"      # Force GTK to use X11
+        time.sleep(5)
 
-    # Create window as normal first
-    cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
+        # Hide the mouse.
+        os.system("unclutter -idle 0 &")
 
-    # Show an image first, THEN set fullscreen
-    dummy_image = np.zeros((100, 100, 3), dtype=np.uint8)
-    cv2.imshow("Display Image", dummy_image)
-    cv2.waitKey(100)  # Brief wait to ensure window is created
+        # Create window as normal first.
+        cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
 
-    # Now set fullscreen
-    cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        # Show an image first, THEN set fullscreen.
+        dummy_image = np.zeros((100, 100, 3), dtype=np.uint8)
+        cv2.imshow("Display Image", dummy_image)
+
+        # Brief wait to ensure window is created.
+        cv2.waitKey(100)
+
+        # Now set fullscreen.
+        cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 
-    # # Raspbian.
-    # if operating_system == "raspbian":
-    #     # Access the display. TODO: check if still necessary!
-    #     os.environ["DISPLAY"] = ':0'
+    # Raspbian.
+    if operating_system == "raspbian":
+        # Access the display. TODO: check if still necessary!
+        os.environ["DISPLAY"] = ':0'
 
-    #     # Hide the mouse.
-    #     os.system("unclutter -idle 0 &")
+        # Hide the mouse.
+        os.system("unclutter -idle 0 &")
 
-    #     # Set up the display.
-    #     if operating_system == "raspbian":
-    #         cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
-    #         cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-    # # Ubuntu.
-    # elif operating_system == "ubuntu":
-    #     # Access the display. TODO: check if still necessary!
-    #     os.environ["DISPLAY"] = ':0'
-
-    #     # Hide the mouse
-    #     os.system("unclutter -idle 0 &")
-
-    #     # Workaround for Wayland: Manually resize the window to fill the screen
-    #     cv2.namedWindow("Display Image", cv2.WINDOW_NORMAL)
-    #     cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-    # # MacOS.
-    # elif operating_system == "macos":
-    #     cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+        # Set up the display.
+        if operating_system == "raspbian":
+            cv2.namedWindow("Display Image", cv2.WND_PROP_FULLSCREEN)
+            cv2.setWindowProperty("Display Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 
 
@@ -83,22 +77,24 @@ if __name__ == "__main__":
     os_name = get_os_name()
 
     # Rotate the screen.
-    rotate_screen(operating_system=os_name,
-                  rotation=config["rotation"])
+    rotate_screen(
+        operating_system=os_name,
+        rotation=config["rotation"])
 
     # Set up the display to show images.
     set_up_display(operating_system=os_name)
 
-
     # Start the camera stream.
-    # Raspbian: NOTE: assumes we are using the picam, NOT a webcam!
+    # NOTE: Raspbian assumes we are using the picam, NOT a webcam!
     if os_name == "raspbian":
         from picamera2 import Picamera2  # type: ignore
 
         # Initialize the picamera.
         picam2 = Picamera2()
-        picam2.configure(picam2.create_preview_configuration(main={"format": "RGB888",}))
-                                                                    # "size": (WIDTH, HEIGHT)}))
+        picam2.configure(
+            picam2.create_preview_configuration(
+                main={"format": "RGB888",}))
+                # "size": (WIDTH, HEIGHT)}))
         picam2.start()
 
     # Ubuntu or MacOS. 
@@ -142,30 +138,31 @@ if __name__ == "__main__":
                     print("Error: Could not capture frame.")
                     exit()
 
-            # Swap faces
+            # Swap faces.
             swapped_face = swap_faces(source_image=frame,
                                       target_image=background_image)
 
+            # Display the new image.
             if swapped_face is not None:
-                # Display the new image.
                 cv2.imshow("Display Image", swapped_face)
 
                 # Update the last face detection time.
                 last_face_time = time.time()
                 display_face = True
 
+            # If no face is detected for 10 seconds, switch back to background.
             else:
-                # If no face is detected for 10 seconds, switch back to background.
-                if display_face and (time.time() - last_face_time > 10):
+                if display_face and (time.time() - \
+                                     last_face_time > config["revert_to_background_time"]):
                     cv2.imshow("Display Image", background_image)
                     display_face = False
 
-            # Check for key presses
+            # Check for key presses.
             key = cv2.waitKey(1) & 0xFF
-            if key == ord("q") or key == 27:  # 'q' or ESC key
+            if key == ord("q") or key == 27:
                 break
 
-        # Release the camera and close windows
+        # Release the camera and close windows.
         cv2.destroyAllWindows()
         cap.release()
 
@@ -174,30 +171,32 @@ if __name__ == "__main__":
     finally:
         print("Cleaning up resources...")
         
-        # Force destroy all windows first
+        # Force destroy all windows first.
         try:
             cv2.destroyAllWindows()
-            cv2.waitKey(1)  # Process window destruction events
+
+            # Process window destruction events.
+            cv2.waitKey(1)
         except:
             pass
         
-        # Then cleanup cameras
+        # Then cleanup cameras.
         if os_name in ["ubuntu", "macos"]:
             try:
                 cap.release()
             except:
                 pass
-                
+
         if os_name == "raspbian":
             try:
                 picam2.stop()
             except:
                 pass
-        
-        # Extra cleanup for good measure
+
+        # Extra cleanup for good measure.
         try:
             cv2.destroyAllWindows()
         except:
             pass
-            
-        print("Cleanup complete")
+
+        print("Cleanup complete!")

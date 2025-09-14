@@ -1,18 +1,19 @@
+from contextlib import contextmanager
+import insightface
+from insightface.app import FaceAnalysis
 import numpy as np
 import onnxruntime as ort
 import os
 import sys
-from contextlib import contextmanager
-import insightface
-from insightface.app import FaceAnalysis
+from typing import Optional
 
 
 
-# Set logging level to error to suppress warnings
+# Set logging level to error to suppress warnings.
 ort.set_default_logger_severity(3)
 import warnings
 
-# Suppress the specific FutureWarning
+# Suppress the specific FutureWarning.
 warnings.filterwarnings("ignore",
     category=FutureWarning,
     module="insightface.utils.transform")
@@ -37,11 +38,16 @@ def suppress_stdout():
 with suppress_stdout():
     app = FaceAnalysis(name="buffalo_l")
     app.prepare(ctx_id=0, det_size=(640, 640))
-    swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
+    swapper = insightface.model_zoo.get_model(
+        "inswapper_128.onnx",
+        download=False,
+        download_zip=False)
 
 
-def swap_faces(source_image : np.ndarray,
-               target_image : np.ndarray) -> np.ndarray | None:
+def swap_faces(
+    source_image : np.ndarray,
+    target_image : np.ndarray
+    ) -> Optional[np.ndarray]:
     """
     Takes a face from a `source_image` and applies it to the `target_image`.
     If there is more than one face in the `source_image` or `target_image,
@@ -60,21 +66,25 @@ def swap_faces(source_image : np.ndarray,
     -------
     np.array
         The image with the swapped face.
+    None
+        There was an exception when swappingl
     """
     try:
-        # Identify faces
+        # Identify faces.
         source_faces = app.get(source_image)
         target_faces = app.get(target_image)
 
-        # Choose one face from each image
+        # Choose one face from each image.
         source_face = source_faces[0]
         target_face = target_faces[0]
 
-        # Swap faces
-        swapped_face = swapper.get(target_image, target_face, source_face, paste_back=True)  # type: ignore
+        # Swap faces.
+        swapped_face = swapper.get(target_image, # type: ignore
+            target_face,
+            source_face,                         # type: ignore
+            paste_back=True)
 
-        # Should return a np.ndarray
-        return swapped_face # type: ignore
-    
+        return swapped_face                      # type: ignore
+
     except:
         return None
