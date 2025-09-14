@@ -1,6 +1,6 @@
-# Mona Lisa Override
+# Mona Lisa Override 🧑‍🎨
 
-Code for my face-swapping Mona Lisa portrait 🧑‍🎨
+Code for my face-swapping Mona Lisa portrait.
 
 
 ![View Mona Lisa Override](images/mona_lisa_override.png)
@@ -18,9 +18,9 @@ Ubuntu:
 - `sudo apt-get install python3-dev build-essential`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
-- copy `inswapper_128.onnx` to the base directory of this repo.
 - `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
 - `chmod +x gnome-randr.py`
+- copy `inswapper_128.onnx` to the base directory of this repo.
 
 Raspberry Pi w/ Picam:
 
@@ -30,9 +30,9 @@ Raspberry Pi w/ Picam:
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
 - `sudo apt-get install unclutter`
-- copy `inswapper_128.onnx` to the base directory of this repo.
 - `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
 - `chmod +x gnome-randr.py`
+- copy `inswapper_128.onnx` to the base directory of this repo.
 
 MacOS (for testing):
 
@@ -41,9 +41,9 @@ MacOS (for testing):
 - `python -m venv .venv`
 - `source .venv/bin/activate`
 - `pip install -r requirements.txt`
-- copy `inswapper_128.onnx` to the base directory of this repo.
 - `curl https://gitlab.com/Oschowa/gnome-randr/-/raw/master/gnome-randr.py -o gnome-randr.py`
 - `chmod +x gnome-randr.py`
+- copy `inswapper_128.onnx` to the base directory of this repo.
 
 
 ## Test
