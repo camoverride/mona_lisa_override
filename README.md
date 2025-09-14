@@ -2,6 +2,7 @@
 
 Code for my face-swapping Mona Lisa portrait.
 
+Battle-tested and ready for long run times in gallery settings!
 
 ![View Mona Lisa Override](images/mona_lisa_override.png)
 
