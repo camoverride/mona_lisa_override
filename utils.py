@@ -180,9 +180,9 @@ def rotate_screen(
         elif rotation == "flip":
             rotation_degs = 180
 
-        os.system(f"WAYLAND_DISPLAY={display_info['output_device']} wlr-randr \
-                     --output {display_info['output_device']}--transform {rotation_degs}")
-
+        os.system(f"WAYLAND_DISPLAY=wayland-0 wlr-randr \
+                     --output {display_info['output_device']} --transform {rotation_degs}")
+        
     # Ubuntu.
     elif operating_system == "ubuntu":
         # Set to normal.
