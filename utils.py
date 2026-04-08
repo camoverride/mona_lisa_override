@@ -104,12 +104,11 @@ def _get_display_info(operating_system : str) -> dict:
             width, height = map(int, match.groups())
 
         # Grep through connected displays to get the correct one.
-        command = "DISPLAY=:0 xrandr | grep ' connected'"
+        command = "wlr-randr | grep ' connected'"
         result = subprocess.check_output(command, shell=True, text=True)
         output_device = result.split(" ")[0]
 
-        # Hard code this value, as it's failing.
-        output_device = "HDMI-A-1"
+        # Debug, as this is a common point of failure.
         print(f"On Raspbian. Output device: {output_device}")
 
     # Ubuntu.
