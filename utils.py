@@ -108,6 +108,10 @@ def _get_display_info(operating_system : str) -> dict:
         result = subprocess.check_output(command, shell=True, text=True)
         output_device = result.split(" ")[0]
 
+        # Hard code this value, as it's failing.
+        output_device = "HDMI-A-1"
+        print(f"On Raspbian. Output device: {output_device}")
+
     # Ubuntu.
     elif operating_system == "ubuntu":
         # Use xrandr to get monitor dimensions.
