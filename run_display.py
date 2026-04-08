@@ -75,6 +75,7 @@ if __name__ == "__main__":
 
     # Get the name of the OS. Should be either "raspbian", "ubuntu", or "macos".
     os_name = get_os_name()
+    print(os_name)
 
     # Rotate the screen.
     rotate_screen(
