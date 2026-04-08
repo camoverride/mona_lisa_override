@@ -47,12 +47,20 @@ MacOS (for testing):
 - copy `inswapper_128.onnx` to the base directory of this repo.
 
 
+Then make sure the Mona Lisa picture matches the dimension of the monitor:
+- `export DISPLAY=:0`
+- `xrandr | grep '*'`
+
+And set the correct `base_image_path` in `config.yaml`
+
+
 ## Test
 
 Test the camera using `cheese` to make sure the scene is visible.
 
 Run the code:
 
+- If accessing via SSH: `export DISPLAY=:0`
 - `python run_display.py`
 
 
