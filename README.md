@@ -51,6 +51,9 @@ Then make sure the Mona Lisa picture matches the dimension of the monitor:
 - `export DISPLAY=:0`
 - `xrandr | grep '*'`
 
+Also make sure your connection is something lijke HDMI-A-1:
+- `wlr-randr | grep ' connected'`
+
 And set the correct `base_image_path` in `config.yaml`
 
 
