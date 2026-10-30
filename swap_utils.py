@@ -1,90 +1,172 @@
-from contextlib import contextmanager
-import insightface
-from insightface.app import FaceAnalysis
-import numpy as np
-import onnxruntime as ort
-import os
-import sys
+# from contextlib import contextmanager
+# import insightface
+# from insightface.app import FaceAnalysis
+# import numpy as np
+# import onnxruntime as ort
+# import os
+# import sys
+# from typing import Optional
+
+
+
+# # Set logging level to error to suppress warnings.
+# ort.set_default_logger_severity(3)
+# import warnings
+
+# # Suppress the specific FutureWarning.
+# warnings.filterwarnings("ignore",
+#     category=FutureWarning,
+#     module="insightface.utils.transform")
+# warnings.filterwarnings("ignore",
+#     message="Specified provider 'CUDAExecutionProvider' is not in available provider names",
+#     category=UserWarning,
+#     module="onnxruntime.capi.onnxruntime_inference_collection"
+# )
+
+# # Suppress this warning too.
+# @contextmanager
+# def suppress_stdout():
+#     with open(os.devnull, 'w') as devnull:
+#         old_stdout = sys.stdout
+#         sys.stdout = devnull
+#         try:
+#             yield
+#         finally:
+#             sys.stdout = old_stdout
+
+# # Suppress stdout during model preparation.
+# with suppress_stdout():
+#     app = FaceAnalysis(name="buffalo_l")
+#     app.prepare(ctx_id=0, det_size=(640, 640))
+#     swapper = insightface.model_zoo.get_model(
+#         "inswapper_128.onnx",
+#         download=False,
+#         download_zip=False)
+
+
+# def swap_faces(
+#     source_image : np.ndarray,
+#     target_image : np.ndarray
+#     ) -> Optional[np.ndarray]:
+#     """
+#     Takes a face from a `source_image` and applies it to the `target_image`.
+#     If there is more than one face in the `source_image` or `target_image,
+#     the first face is used.
+
+#     TODO: Apply `source_image` faces to ALL faces in `target_image`
+
+#     Parameters
+#     ----------
+#     source_image : np.ndarray
+#         Image encoded as an array
+#     target_image : np.ndarray
+#         Image encoded as an array
+
+#     Returns
+#     -------
+#     np.array
+#         The image with the swapped face.
+#     None
+#         There was an exception when swappingl
+#     """
+#     try:
+#         # Identify faces.
+#         source_faces = app.get(source_image)
+#         target_faces = app.get(target_image)
+
+#         # Choose one face from each image.
+#         source_face = source_faces[0]
+#         target_face = target_faces[0]
+
+#         # Swap faces.
+#         swapped_face = swapper.get(target_image, # type: ignore
+#             target_face,
+#             source_face,                         # type: ignore
+#             paste_back=True)
+
+#         return swapped_face                      # type: ignore
+
+#     except:
+#         return None
+import io
 from typing import Optional
 
-
-
-# Set logging level to error to suppress warnings.
-ort.set_default_logger_severity(3)
-import warnings
-
-# Suppress the specific FutureWarning.
-warnings.filterwarnings("ignore",
-    category=FutureWarning,
-    module="insightface.utils.transform")
-warnings.filterwarnings("ignore",
-    message="Specified provider 'CUDAExecutionProvider' is not in available provider names",
-    category=UserWarning,
-    module="onnxruntime.capi.onnxruntime_inference_collection"
-)
-
-# Suppress this warning too.
-@contextmanager
-def suppress_stdout():
-    with open(os.devnull, 'w') as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
-
-# Suppress stdout during model preparation.
-with suppress_stdout():
-    app = FaceAnalysis(name="buffalo_l")
-    app.prepare(ctx_id=0, det_size=(640, 640))
-    swapper = insightface.model_zoo.get_model(
-        "inswapper_128.onnx",
-        download=False,
-        download_zip=False)
+import numpy as np
+import requests
+from PIL import Image
 
 
 def swap_faces(
-    source_image : np.ndarray,
-    target_image : np.ndarray
-    ) -> Optional[np.ndarray]:
+    source_image: np.ndarray,
+    target_image: np.ndarray,
+    server_ip_address: str
+) -> Optional[np.ndarray]:
     """
-    Takes a face from a `source_image` and applies it to the `target_image`.
-    If there is more than one face in the `source_image` or `target_image,
-    the first face is used.
-
-    TODO: Apply `source_image` faces to ALL faces in `target_image`
+    Sends two images to a remote server for face swapping.
 
     Parameters
     ----------
     source_image : np.ndarray
-        Image encoded as an array
+        Source image containing the face to apply.
     target_image : np.ndarray
-        Image encoded as an array
+        Target image receiving the face.
+    server_ip_address : str
+        IP address of the face-swapping server.
+        Example: "192.168.1.100:5000"
 
     Returns
     -------
-    np.array
-        The image with the swapped face.
+    np.ndarray
+        Image with the swapped face.
     None
-        There was an exception when swappingl
+        An error occurred during processing.
     """
+
     try:
-        # Identify faces.
-        source_faces = app.get(source_image)
-        target_faces = app.get(target_image)
+        url = f"http://{server_ip_address}/swap_faces"
 
-        # Choose one face from each image.
-        source_face = source_faces[0]
-        target_face = target_faces[0]
+        # Encode images as JPEG.
+        source_buffer = io.BytesIO()
+        target_buffer = io.BytesIO()
 
-        # Swap faces.
-        swapped_face = swapper.get(target_image, # type: ignore
-            target_face,
-            source_face,                         # type: ignore
-            paste_back=True)
+        Image.fromarray(source_image).save(
+            source_buffer, format="JPEG"
+        )
+        Image.fromarray(target_image).save(
+            target_buffer, format="JPEG"
+        )
 
-        return swapped_face                      # type: ignore
+        source_buffer.seek(0)
+        target_buffer.seek(0)
 
-    except:
+        files = {
+            "source_image": (
+                "source.jpg",
+                source_buffer,
+                "image/jpeg"
+            ),
+            "target_image": (
+                "target.jpg",
+                target_buffer,
+                "image/jpeg"
+            )
+        }
+
+        response = requests.post(
+            url,
+            files=files,
+            timeout=120
+        )
+
+        response.raise_for_status()
+
+        # Decode the returned image.
+        result = Image.open(
+            io.BytesIO(response.content)
+        ).convert("RGB")
+
+        return np.array(result)
+
+    except Exception as e:
+        print(f"Face swapping failed: {e}")
         return None
