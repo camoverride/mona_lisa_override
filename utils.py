@@ -168,39 +168,41 @@ def rotate_screen(
     None
         Rotates the screen.
     """
-    display_info = _get_display_info(operating_system=operating_system)
+    os.system(f"WAYLAND_DISPLAY=wayland-0 wlr-randr \
+                         --output HDMI-A-1 --transform 90")
+    # display_info = _get_display_info(operating_system=operating_system)
 
-    # Raspbian.
-    if operating_system == "raspbian":
+    # # Raspbian.
+    # if operating_system == "raspbian":
 
-        # Translate the flip intp degrees.
-        if rotation == "left":
-            rotation_degs = 90
-        elif rotation == "right":
-            rotation_degs = 270
-        elif rotation == "normal":
-            rotation_degs = 0
-        elif rotation == "flip":
-            rotation_degs = 180
+    #     # Translate the flip intp degrees.
+    #     if rotation == "left":
+    #         rotation_degs = 90
+    #     elif rotation == "right":
+    #         rotation_degs = 270
+    #     elif rotation == "normal":
+    #         rotation_degs = 0
+    #     elif rotation == "flip":
+    #         rotation_degs = 180
 
-        os.system(f"WAYLAND_DISPLAY=wayland-0 wlr-randr \
-                     --output HDMI-A-1 --transform 90")
+    #     os.system(f"WAYLAND_DISPLAY=wayland-0 wlr-randr \
+    #                  --output HDMI-A-1 --transform 90")
         
-    # Ubuntu.
-    elif operating_system == "ubuntu":
-        # Set to normal.
-        os.system(f"./gnome-randr.py --output {display_info['output_device']} \
-                    --rotate normal")
+    # # Ubuntu.
+    # elif operating_system == "ubuntu":
+    #     # Set to normal.
+    #     os.system(f"./gnome-randr.py --output {display_info['output_device']} \
+    #                 --rotate normal")
         
-        time.sleep(2)
+    #     time.sleep(2)
 
-        # Then rotate.
-        os.system(f"./gnome-randr.py --output {display_info['output_device']} \
-                    --rotate {rotation}")
+    #     # Then rotate.
+    #     os.system(f"./gnome-randr.py --output {display_info['output_device']} \
+    #                 --rotate {rotation}")
 
-        time.sleep(2)
+    #     time.sleep(2)
 
-    # MacOS.
-    elif operating_system == "macos":
-        # MacOS is for testing only.
-        pass
+    # # MacOS.
+    # elif operating_system == "macos":
+    #     # MacOS is for testing only.
+    #     pass
