@@ -184,7 +184,7 @@ def rotate_screen(
             rotation_degs = 180
 
         os.system(f"WAYLAND_DISPLAY=wayland-0 wlr-randr \
-                     --output {display_info['output_device']} --transform {rotation_degs}")
+                     --output HDMI-A-1 --transform 90")
         
     # Ubuntu.
     elif operating_system == "ubuntu":
