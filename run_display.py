@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
             # Swap faces.
             swapped_face = swap_faces(source_image=frame,
-                                      target_image=background_image,
+                                      background_image_path="images/mona_lisa_900_1600.jpg",
                                       server_ip_address="100.116.247.74:5000")
 
             # Display the new image.

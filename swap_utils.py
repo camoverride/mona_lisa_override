@@ -98,74 +98,42 @@ from PIL import Image
 
 def swap_faces(
     source_image: np.ndarray,
-    target_image: np.ndarray,
-    server_ip_address: str
-) -> Optional[np.ndarray]:
-    """
-    Sends two images to a remote server for face swapping.
-
-    Parameters
-    ----------
-    source_image : np.ndarray
-        Source image containing the face to apply.
-    target_image : np.ndarray
-        Target image receiving the face.
-    server_ip_address : str
-        IP address of the face-swapping server.
-        Example: "192.168.1.100:5000"
-
-    Returns
-    -------
-    np.ndarray
-        Image with the swapped face.
-    None
-        An error occurred during processing.
-    """
+    server_ip_address: str,
+    background_image_path: str
+) -> np.ndarray | None:
 
     try:
         url = f"http://{server_ip_address}/swap_faces"
 
-        # Encode images as JPEG.
-        source_buffer = io.BytesIO()
-        target_buffer = io.BytesIO()
+        buffer = io.BytesIO()
 
         Image.fromarray(source_image).save(
-            source_buffer, format="JPEG"
+            buffer, format="JPEG"
         )
-        Image.fromarray(target_image).save(
-            target_buffer, format="JPEG"
-        )
-
-        source_buffer.seek(0)
-        target_buffer.seek(0)
-
-        files = {
-            "source_image": (
-                "source.jpg",
-                source_buffer,
-                "image/jpeg"
-            ),
-            "target_image": (
-                "target.jpg",
-                target_buffer,
-                "image/jpeg"
-            )
-        }
+        buffer.seek(0)
 
         response = requests.post(
             url,
-            files=files,
+            files={
+                "source_image": (
+                    "source.jpg",
+                    buffer,
+                    "image/jpeg"
+                )
+            },
+            data={
+                "background_image_path": background_image_path
+            },
             timeout=120
         )
 
         response.raise_for_status()
 
-        # Decode the returned image.
-        result = Image.open(
-            io.BytesIO(response.content)
-        ).convert("RGB")
-
-        return np.array(result)
+        return np.array(
+            Image.open(
+                io.BytesIO(response.content)
+            ).convert("RGB")
+        )
 
     except Exception as e:
         print(f"Face swapping failed: {e}")
