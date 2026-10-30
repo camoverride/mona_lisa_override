@@ -103,13 +103,13 @@ def _get_display_info(operating_system : str) -> dict:
         if match:
             width, height = map(int, match.groups())
 
-        # Grep through connected displays to get the correct one.
-        command = "wlr-randr | grep ' connected'"
-        result = subprocess.check_output(command, shell=True, text=True)
-        output_device = result.split(" ")[0]
+        # # Grep through connected displays to get the correct one.
+        # command = "wlr-randr | grep ' connected'"
+        # result = subprocess.check_output(command, shell=True, text=True)
+        # output_device = result.split(" ")[0]
 
         # Debug, as this is a common point of failure.
-        print(f"On Raspbian. Output device: {output_device}")
+        # print(f"On Raspbian. Output device: {output_device}")
 
     # Ubuntu.
     elif operating_system == "ubuntu":
