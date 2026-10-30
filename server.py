@@ -1,3 +1,4 @@
+
 from flask import Flask, request, send_file, jsonify
 from PIL import Image
 
@@ -12,11 +13,20 @@ import os
 import threading
 
 
+# --------------------------------------------------
+# Configuration
+# --------------------------------------------------
+
 ort.set_default_logger_severity(3)
 
 server = Flask(__name__)
 
-# Load models once.
+# --------------------------------------------------
+# Load InsightFace models once
+# --------------------------------------------------
+
+print("Loading InsightFace models...")
+
 app = FaceAnalysis(name="buffalo_l")
 app.prepare(ctx_id=0, det_size=(640, 640))
 
@@ -28,16 +38,24 @@ swapper = insightface.model_zoo.get_model(
 
 model_lock = threading.Lock()
 
+print("Models loaded successfully.")
+
+
+# --------------------------------------------------
+# Face swapping endpoint
+# --------------------------------------------------
 
 @server.route("/swap_faces", methods=["POST"])
 def swap_faces_endpoint():
 
     try:
+        # Check source image.
         if "source_image" not in request.files:
             return jsonify({
                 "error": "Missing source_image"
             }), 400
 
+        # Get background image path.
         background_path = request.form.get(
             "background_image_path"
         )
@@ -52,29 +70,40 @@ def swap_faces_endpoint():
                 "error": "Background image does not exist"
             }), 400
 
-        # Load source image.
+        # --------------------------------------------------
+        # Load images
+        # --------------------------------------------------
+
+        # PIL loads RGB. Convert to BGR for InsightFace.
         source_image = np.array(
             Image.open(
                 request.files["source_image"]
             ).convert("RGB")
         )
 
-        # Load background image from server filesystem.
+        source_image = source_image[:, :, ::-1].copy()
+
         target_image = np.array(
             Image.open(background_path).convert("RGB")
         )
+
+        target_image = target_image[:, :, ::-1].copy()
+
+        # --------------------------------------------------
+        # Detect faces and perform swap
+        # --------------------------------------------------
 
         with model_lock:
 
             source_faces = app.get(source_image)
             target_faces = app.get(target_image)
 
-            if not source_faces:
+            if len(source_faces) == 0:
                 return jsonify({
                     "error": "No face in source image"
                 }), 400
 
-            if not target_faces:
+            if len(target_faces) == 0:
                 return jsonify({
                     "error": "No face in background image"
                 }), 400
@@ -86,9 +115,16 @@ def swap_faces_endpoint():
                 paste_back=True
             )
 
+        # --------------------------------------------------
+        # Encode result
+        # --------------------------------------------------
+
+        # Convert BGR back to RGB for PIL.
+        result_rgb = result[:, :, ::-1].copy()
+
         buffer = io.BytesIO()
 
-        Image.fromarray(result).save(
+        Image.fromarray(result_rgb).save(
             buffer,
             format="JPEG",
             quality=95
@@ -98,10 +134,12 @@ def swap_faces_endpoint():
 
         return send_file(
             buffer,
-            mimetype="image/jpeg"
+            mimetype="image/jpeg",
+            download_name="swapped.jpg"
         )
 
     except Exception as e:
+
         print("Server error:", repr(e))
 
         return jsonify({
@@ -109,9 +147,27 @@ def swap_faces_endpoint():
         }), 500
 
 
+# --------------------------------------------------
+# Health check
+# --------------------------------------------------
+
+@server.route("/health", methods=["GET"])
+def health():
+
+    return jsonify({
+        "status": "online"
+    })
+
+
+# --------------------------------------------------
+# Start server
+# --------------------------------------------------
+
 if __name__ == "__main__":
+
     server.run(
         host="0.0.0.0",
         port=5000,
-        debug=False
+        debug=False,
+        threaded=True
     )
