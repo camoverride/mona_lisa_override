@@ -1,7 +1,7 @@
 # The base image onto which a face will be swapped.
 # Should be the same dimension as the monitor so that is does not have to be re-sized.
 # Check with:  DISPLAY=:0 xrandr | grep " connected"
-base_image_path: mona_lisa_1080_1920.jpg
+base_image_path: mona_lisa_900_1600.jpg
 
 # Which direction to rotate the monitor.
 rotation: left
