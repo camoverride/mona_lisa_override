@@ -114,21 +114,22 @@ def perform_face_swap(source_image, target_image):
 
         return result
 
-
 @server.route("/swap_faces", methods=["POST"])
 def swap_faces_endpoint():
 
-    try:
-        # Validate uploaded files.
-        if (
-            "source_image" not in request.files
-            or "target_image" not in request.files
-        ):
-            return jsonify({
-                "error": "Both images must be provided."
-            }), 400
+    print("\n--- Incoming face swap request ---")
+    print("Content type:", request.content_type)
+    print("Files received:", list(request.files.keys()))
 
-        # Decode images.
+    try:
+        if "source_image" not in request.files:
+            print("Missing source_image")
+            return jsonify({"error": "Missing source_image"}), 400
+
+        if "target_image" not in request.files:
+            print("Missing target_image")
+            return jsonify({"error": "Missing target_image"}), 400
+
         source_image = decode_image(
             request.files["source_image"]
         )
@@ -137,14 +138,17 @@ def swap_faces_endpoint():
             request.files["target_image"]
         )
 
-        # Perform face swapping.
+        print("Source dimensions:", source_image.shape)
+        print("Target dimensions:", target_image.shape)
+
         result = perform_face_swap(
             source_image,
             target_image
         )
 
-        # Return the resulting image.
         buffer = encode_image(result)
+
+        print("Face swap successful.")
 
         return send_file(
             buffer,
@@ -152,16 +156,12 @@ def swap_faces_endpoint():
             download_name="swapped.jpg"
         )
 
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
     except Exception as e:
-        print(f"Server error: {e}")
+        print("ERROR:", repr(e))
 
         return jsonify({
-            "error": "Face swapping failed."
-        }), 500
-
+            "error": str(e)
+        }), 400
 
 # --------------------------------------------------
 # Start server
